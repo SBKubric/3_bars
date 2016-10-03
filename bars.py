@@ -39,16 +39,16 @@ def get_closest_bar(data, longitude, latitude):
     nearest = {'name': data[0]['Cells']['Name'],
            'dist': distance(
                latitude,
-               float(data[0]['Cells']['geoData']['coordinates'][0]),
-               longitude,
                float(data[0]['Cells']['geoData']['coordinates'][1]),
+               longitude,
+               float(data[0]['Cells']['geoData']['coordinates'][0]),
            ),
            }
 
     for json_object in data:
-        if nearest['dist'] > distance(latitude, float(json_object['Cells']['geoData']['coordinates'][0]), longitude, float(json_object['Cells']['geoData']['coordinates'][1])):
+        if nearest['dist'] > distance(latitude, float(json_object['Cells']['geoData']['coordinates'][1]), longitude, float(json_object['Cells']['geoData']['coordinates'][0])):
             nearest['name'] = json_object['Cells']['Name']
-            nearest['dist'] = distance(latitude, float(json_object['Cells']['geoData']['coordinates'][0]), longitude, float(json_object['Cells']['geoData']['coordinates'][1]))
+            nearest['dist'] = distance(latitude, float(json_object['Cells']['geoData']['coordinates'][1]), longitude, float(json_object['Cells']['geoData']['coordinates'][0]))
 
     print('The nearest place is "%s"' % nearest['name'])
 
