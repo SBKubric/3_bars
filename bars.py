@@ -1,6 +1,7 @@
 import json
 import math
 import os
+from operator import itemgetter
 
 
 def distance(latitude1, latitude2, longitude1, longitude2):
@@ -20,7 +21,7 @@ def distance(latitude1, latitude2, longitude1, longitude2):
     delta_longitude = math.radians(longitude2 - longitude1)
 
     a = math.sin(delta_latitude / 2) ** 2 + math.cos(latitude1) * math.cos(latitude2) * (
-    math.sin(delta_longitude / 2) ** 2)
+        math.sin(delta_longitude / 2) ** 2)
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return earth_radius * c
 
@@ -34,47 +35,43 @@ def load_json(json_path):
 
 def get_biggest_bar(json_bars):
     bars = {(json_bar['Cells']['SeatsCount'], json_bar['Cells']['Name']) for json_bar in json_bars}
-    biggest_bar = max(bars)
+    biggest_bar = max(bars, itemgetter(0))
     return biggest_bar[1]
 
 
 def get_smallest_bar(json_bars):
     bars = {(json_bar['Cells']['SeatsCount'], json_bar['Cells']['Name']) for json_bar in json_bars}
-    smallest_bar = min(bars)
+    smallest_bar = min(bars, itemgetter(0))
     return smallest_bar[1]
 
 
 def get_closest_bar(json_bars, user_longitude, user_latitude):
     bars = {(distance(
-                       user_latitude,
-                       float(json_bar['Cells']['geoData']['coordinates'][1]),
-                       user_longitude,
-                       float(json_bar['Cells']['geoData']['coordinates'][0]),
-                   ),
+        user_latitude,
+        float(json_bar['Cells']['geoData']['coordinates'][1]),
+        user_longitude,
+        float(json_bar['Cells']['geoData']['coordinates'][0]),
+    ),
              json_bar['Cells']['Name']) for json_bar in json_bars
             }
-    closest_bar = min(bars)
+    closest_bar = min(bars, itemgetter(0))
     return closest_bar[1]
 
 
 if __name__ == '__main__':
-    print('Enter the path to the file:')
-    json_path = input()
+    json_path = input('Enter the path to the file:\n=> ')
     json_bars = load_json(json_path)
 
     while json_bars is None:
-        print('Sorry, but it looks like there is a mistake in the path to the file.'
-              '\nPlease, enter the valid path:', end=' ')
-        json_path = input()
+        json_path = input('Sorry, but it looks like there is a mistake in the path to the file.'
+                          '\nPlease, enter the valid path:\n=> ')
         json_bars = load_json(json_path)
 
     print('The biggest bar is %s' % get_biggest_bar(json_bars))
     print('The smallest bar is %s' % get_smallest_bar(json_bars))
 
-    print('Enter your latitude:')
-    user_latitude = float(input())
+    user_latitude = float(input('Enter your latitude:\n=> '))
 
-    print('Enter your longitude:')
-    user_longitude = float(input())
+    user_longitude = float(input('Enter your longitude:\n=> '))
 
     print('The nearest place is "%s"' % get_closest_bar(json_bars, user_longitude, user_latitude))
