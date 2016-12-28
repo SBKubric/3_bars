@@ -33,45 +33,40 @@ def load_json(json_path):
         return json.load(data_file)
 
 
-def get_biggest_bar(json_bars):
-    bars = {(json_bar['Cells']['SeatsCount'], json_bar['Cells']['Name']) for json_bar in json_bars}
-    biggest_bar = max(bars, itemgetter(0))
-    return biggest_bar[1]
+def get_biggest_bar(data_bars):
+    biggest_bar = max(data_bars, key=lambda bar: bar['SeatsCount'])
+    return biggest_bar['Name']
 
 
-def get_smallest_bar(json_bars):
-    bars = {(json_bar['Cells']['SeatsCount'], json_bar['Cells']['Name']) for json_bar in json_bars}
-    smallest_bar = min(bars, itemgetter(0))
-    return smallest_bar[1]
+def get_smallest_bar(data_bars):
+    smallest_bar = min(data_bars, key=lambda bar: bar['SeatsCount'])
+    return smallest_bar['Name']
 
 
-def get_closest_bar(json_bars, user_longitude, user_latitude):
-    bars = {(distance(
+def get_closest_bar(data_bars, user_longitude, user_latitude):
+    closest_bar = min(data_bars, key=lambda bar: distance(
         user_latitude,
-        float(json_bar['Cells']['geoData']['coordinates'][1]),
+        float(bar['geoData']['coordinates'][1]),
         user_longitude,
-        float(json_bar['Cells']['geoData']['coordinates'][0]),
-    ),
-             json_bar['Cells']['Name']) for json_bar in json_bars
-            }
-    closest_bar = min(bars, itemgetter(0))
-    return closest_bar[1]
+        float(bar['geoData']['coordinates'][0]),
+    ))
+    return closest_bar['Name']
 
 
 if __name__ == '__main__':
     json_path = input('Enter the path to the file:\n=> ')
-    json_bars = load_json(json_path)
+    data_bars = load_json(json_path)
 
-    while json_bars is None:
+    while data_bars is None:
         json_path = input('Sorry, but it looks like there is a mistake in the path to the file.'
                           '\nPlease, enter the valid path:\n=> ')
-        json_bars = load_json(json_path)
+        data_bars = load_json(json_path)
 
-    print('The biggest bar is %s' % get_biggest_bar(json_bars))
-    print('The smallest bar is %s' % get_smallest_bar(json_bars))
+    print('The biggest bar is %s' % get_biggest_bar(data_bars))
+    print('The smallest bar is %s' % get_smallest_bar(data_bars))
 
     user_latitude = float(input('Enter your latitude:\n=> '))
 
     user_longitude = float(input('Enter your longitude:\n=> '))
 
-    print('The nearest place is "%s"' % get_closest_bar(json_bars, user_longitude, user_latitude))
+    print('The nearest place is "%s"' % get_closest_bar(data_bars, user_longitude, user_latitude))
