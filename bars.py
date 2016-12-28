@@ -1,7 +1,6 @@
 import json
 import math
 import os
-from operator import itemgetter
 
 
 def distance(latitude1, latitude2, longitude1, longitude2):
@@ -29,7 +28,7 @@ def distance(latitude1, latitude2, longitude1, longitude2):
 def load_json(json_path):
     if not os.path.exists(json_path):
         return None
-    with open(json_path) as data_file:
+    with open(json_path, encoding="Windows-1251") as data_file:
         return json.load(data_file)
 
 
